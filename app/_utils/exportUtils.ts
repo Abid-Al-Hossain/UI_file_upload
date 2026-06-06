@@ -15,17 +15,81 @@ export function buildExportPayload(state: FileUploadState, fileName = "file-uplo
 }
 
 export function buildReactCode(state: FileUploadState) {
-  return [
-    "import * as React from \"react\";",
-    "",
-    "const state = " + JSON.stringify(state, null, 2) + ";",
-    "",
-    "export default function FileUploadComponent() {",
-    "  return (",
-        "    <label htmlFor={state.id}>{state.label}</label>",
-    "    <input id={state.id} name={state.name} type=\"file\" accept={state.accept} multiple={state.multiple} capture={state.capture || undefined} required={state.required} disabled={state.disabled} />",
-    "  );",
-    "}",
-    "",
-  ].join("\n");
+  return `import * as React from "react";
+
+const state = ${JSON.stringify(state, null, 2)};
+
+export default function FileUploadComponent() {
+  const invalid = state.invalid || state.previewState === "invalid";
+  const disabled = state.disabled || state.previewState === "disabled";
+  const message = invalid ? state.errorText : state.showSuccess ? state.successText : state.showHelper ? state.helper : "";
+  const selectedFiles = state.value.split(",").map((file) => file.trim()).filter(Boolean);
+  const visibleFiles = selectedFiles.length || state.previewState === "filled" ? selectedFiles.length ? selectedFiles : ["brand-kit.zip"] : [];
+  const descriptionId = \`\${state.id}-description\`;
+  const helperId = \`\${state.id}-helper\`;
+  const statusId = \`\${state.id}-status\`;
+  const describedBy = [descriptionId, helperId, message ? statusId : ""].filter(Boolean).join(" ");
+  const shellStyle = {
+    width: state.width,
+    minHeight: state.height,
+    padding: state.padding,
+    gap: state.gap,
+    borderRadius: state.radius,
+    border: \`\${state.borderWidth}px solid \${invalid ? "#fb7185" : state.previewState === "focus" ? state.accent : state.border}\`,
+    boxShadow: \`0 \${Math.round(state.shadow / 3)}px \${state.shadow}px rgba(0,0,0,.28)\`,
+    background: state.background,
+    color: state.foreground,
+    fontFamily: state.fontFamily,
+    opacity: disabled ? 0.55 : 1,
+    outline: state.previewState === "focus" ? \`\${state.focusRing}px solid \${state.accent}\` : "none",
+    transition: state.motion ? "all 180ms ease" : "none",
+  };
+  const zoneClass = state.dropMode === "compact"
+    ? "grid gap-2 rounded-xl border px-3 py-3"
+    : state.dropMode === "button"
+      ? "grid gap-3 rounded-2xl border px-4 py-4"
+      : "grid gap-3 rounded-2xl border border-dashed p-4 text-center";
+  const listClass = state.listMode === "chips" ? "flex flex-wrap gap-2" : state.listMode === "rows" ? "grid gap-2" : "grid gap-2 sm:grid-cols-2";
+
+  return (
+    <form style={shellStyle} className="grid content-center" aria-labelledby={\`\${state.id}-label\`} onSubmit={(event) => event.preventDefault()}>
+      <label id={\`\${state.id}-label\`} htmlFor={state.id} style={{ fontSize: state.labelSize, fontWeight: state.fontWeight }}>
+        {state.label}{state.required ? " *" : ""}
+      </label>
+      <p id={descriptionId} className="text-sm" style={{ color: state.muted }}>{state.description}</p>
+      <div className={zoneClass} style={{ borderColor: invalid ? "#fb7185" : state.border, background: "rgba(255,255,255,0.04)" }} data-render-mode={state.dropMode}>
+        <input id={state.id} name={state.name} title={state.title} tabIndex={state.tabIndex} dir={state.dir} lang={state.lang} type="file" accept={state.accept} multiple={state.multiple} capture={state.capture || undefined} required={state.required} disabled={disabled} aria-invalid={invalid || undefined} aria-describedby={describedBy} className={state.dropMode === "dropzone" ? "mx-auto max-w-full" : "sr-only"} />
+        {state.dropMode !== "dropzone" && (
+          <label htmlFor={state.id} className="inline-flex w-fit cursor-pointer items-center justify-center rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: "#020617" }}>
+            Browse files
+          </label>
+        )}
+        <span id={helperId} className="text-sm" style={{ color: state.muted }}>{state.maxFileCount} file{state.maxFileCount === 1 ? "" : "s"} max, {state.maxSizeLabel}, accepts {state.accept || "any file"}</span>
+        <div className={listClass} aria-live="polite">
+          {visibleFiles.length ? visibleFiles.map((file) => (
+            <span key={file} className="rounded-xl border px-3 py-2 text-sm" style={{ borderColor: state.border, color: state.foreground }}>
+              {file}
+            </span>
+          )) : (
+            <span className="text-sm" style={{ color: state.muted }}>No file selected</span>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {state.showBrowseAction && state.dropMode === "dropzone" && (
+            <label htmlFor={state.id} className="inline-flex cursor-pointer rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: "#020617" }}>
+              Browse files
+            </label>
+          )}
+          {state.showRemoveAction && (
+            <button type="button" disabled={disabled || !visibleFiles.length} className="rounded-xl border px-4 py-2 text-sm font-semibold disabled:opacity-50" style={{ borderColor: state.border, color: state.foreground }}>
+              Remove selected
+            </button>
+          )}
+        </div>
+      </div>
+      <small id={statusId} style={{ color: invalid ? "#fb7185" : state.showSuccess ? "#22c55e" : state.muted }}>{message}</small>
+    </form>
+  );
+}
+`;
 }

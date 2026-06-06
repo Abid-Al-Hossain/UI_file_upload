@@ -22,6 +22,7 @@ export default function FieldSection({ state, update }: Props) {
   "environment"
 ]} onChange={(value) => update("capture", value)} />
       <Input label="Max size label" value={state.maxSizeLabel} onChange={(value) => update("maxSizeLabel", value)} />
+      <Input label="Selected file preview" value={state.value} onChange={(value) => update("value", value)} />
       <Slider label="Max files" value={state.maxFileCount} min={1} max={12} step={1} onChange={(value) => update("maxFileCount", value)} />
       <Select label="Drop mode" value={state.dropMode} options={[
   "dropzone",
@@ -32,8 +33,10 @@ export default function FieldSection({ state, update }: Props) {
   "cards",
   "rows",
   "chips"
-]} onChange={(value) => update("listMode", value)} />
+      ]} onChange={(value) => update("listMode", value)} />
       <Switch label="Multiple" checked={state.multiple} onChange={(value) => update("multiple", value)} />
+      <Switch label="Show browse action" checked={state.showBrowseAction} onChange={(value) => update("showBrowseAction", value)} />
+      <Switch label="Show remove action" checked={state.showRemoveAction} onChange={(value) => update("showRemoveAction", value)} />
     </SectionCard>
   );
 }
