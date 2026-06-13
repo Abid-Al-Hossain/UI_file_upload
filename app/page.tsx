@@ -41,7 +41,7 @@ export default function Page() {
     setActivePresetId(null);
   };
   const applyPreset = (preset: StudioPreset) => {
-    setState(preset.state);
+    setState({ ...DEFAULT_FILEUPLOAD_STATE, ...(preset.state as Partial<FileUploadState>) });
     setActivePresetId(preset.id);
     setPreviewResetKey((value) => value + 1);
   };

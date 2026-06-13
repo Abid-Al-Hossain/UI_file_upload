@@ -42,7 +42,7 @@ export default function FileUploadComponent() {
     fontFamily: state.fontFamily,
     opacity: disabled ? 0.55 : 1,
     outline: state.previewState === "focus" ? \`\${state.focusRing}px solid \${state.accent}\` : "none",
-    transition: state.motion ? "all 180ms ease" : "none",
+    transition: state.transitionDuration > 0 ? "$1" : "none",
   };
   const zoneClass = state.dropMode === "compact"
     ? "grid gap-2 rounded-xl border px-3 py-3"
