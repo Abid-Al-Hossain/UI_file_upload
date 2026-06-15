@@ -18,6 +18,9 @@ export function buildReactCode(state: FileUploadState) {
   return `import * as React from "react";
 
 const state = ${JSON.stringify(state, null, 2)};
+function resolveFont(s) { return s.fontBucket === "google" ? '"' + s.googleFontFamily + '", sans-serif' : "inherit"; }
+function buildShadow(s) { if (!s.shadowEnabled) return "none"; var hex = Math.round(s.shadowOpacity * 255).toString(16).padStart(2, "0"); return s.shadowX + "px " + s.shadowY + "px " + s.shadowBlur + "px " + s.shadowSpread + "px " + s.shadowColor + hex; }
+
 
 export default function FileUploadComponent() {
   const invalid = state.invalid || state.previewState === "invalid";
@@ -35,14 +38,14 @@ export default function FileUploadComponent() {
     padding: state.padding,
     gap: state.gap,
     borderRadius: state.radius,
-    border: \`\${state.borderWidth}px solid \${invalid ? "#fb7185" : state.previewState === "focus" ? state.accent : state.border}\`,
+    border: \`\${state.borderWidth}px ${state.borderStyle} \${invalid ? state.errorColor : state.previewState === "focus" ? state.accent : state.border}\`,
     boxShadow: \`0 \${Math.round(state.shadow / 3)}px \${state.shadow}px rgba(0,0,0,.28)\`,
     background: state.background,
     color: state.foreground,
-    fontFamily: state.fontFamily,
+    fontFamily: resolveFont(state),
     opacity: disabled ? 0.55 : 1,
     outline: state.previewState === "focus" ? \`\${state.focusRing}px solid \${state.accent}\` : "none",
-    transition: state.transitionDuration > 0 ? "$1" : "none",
+    transition: state.transitionDuration > 0 ? "all " + state.transitionDuration + "ms " + state.transitionEasing : "none",
   };
   const zoneClass = state.dropMode === "compact"
     ? "grid gap-2 rounded-xl border px-3 py-3"
@@ -57,10 +60,10 @@ export default function FileUploadComponent() {
         {state.label}{state.required ? " *" : ""}
       </label>
       <p id={descriptionId} className="text-sm" style={{ color: state.muted }}>{state.description}</p>
-      <div className={zoneClass} style={{ borderColor: invalid ? "#fb7185" : state.border, background: "rgba(255,255,255,0.04)" }} data-render-mode={state.dropMode}>
+      <div className={zoneClass} style={{ borderColor: invalid ? state.errorColor : state.border, background: "rgba(255,255,255,0.04)" }} data-render-mode={state.dropMode}>
         <input id={state.id} name={state.name} title={state.title} tabIndex={state.tabIndex} dir={state.dir} lang={state.lang} type="file" accept={state.accept} multiple={state.multiple} capture={state.capture || undefined} required={state.required} disabled={disabled} aria-invalid={invalid || undefined} aria-describedby={describedBy} className={state.dropMode === "dropzone" ? "mx-auto max-w-full" : "sr-only"} />
         {state.dropMode !== "dropzone" && (
-          <label htmlFor={state.id} className="inline-flex w-fit cursor-pointer items-center justify-center rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: "#020617" }}>
+          <label htmlFor={state.id} className="inline-flex w-fit cursor-pointer items-center justify-center rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: state.actionText }}>
             Browse files
           </label>
         )}
@@ -76,7 +79,7 @@ export default function FileUploadComponent() {
         </div>
         <div className="flex flex-wrap gap-2">
           {state.showBrowseAction && state.dropMode === "dropzone" && (
-            <label htmlFor={state.id} className="inline-flex cursor-pointer rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: "#020617" }}>
+            <label htmlFor={state.id} className="inline-flex cursor-pointer rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: state.actionText }}>
               Browse files
             </label>
           )}
@@ -87,7 +90,7 @@ export default function FileUploadComponent() {
           )}
         </div>
       </div>
-      <small id={statusId} style={{ color: invalid ? "#fb7185" : state.showSuccess ? "#22c55e" : state.muted }}>{message}</small>
+      <small id={statusId} style={{ color: invalid ? state.errorColor : state.showSuccess ? state.successColor : state.muted }}>{message}</small>
     </form>
   );
 }
