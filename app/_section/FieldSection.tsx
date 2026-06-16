@@ -15,6 +15,7 @@ type Props = {
 export default function FieldSection({ state, update }: Props) {
   return (
     <SectionCard title="Field" subtitle="Field controls that are native, preview-honest, and React-export-honest.">
+      <div className="space-y-4">
       <Input label="Accepted types" value={state.accept} onChange={(value) => update("accept", value)} />
       <Select label="Capture" value={state.capture} options={[
   "",
@@ -37,6 +38,7 @@ export default function FieldSection({ state, update }: Props) {
       <Switch label="Multiple" checked={state.multiple} onChange={(value) => update("multiple", value)} />
       <Switch label="Show browse action" checked={state.showBrowseAction} onChange={(value) => update("showBrowseAction", value)} />
       <Switch label="Show remove action" checked={state.showRemoveAction} onChange={(value) => update("showRemoveAction", value)} />
+    </div>
     </SectionCard>
   );
 }
