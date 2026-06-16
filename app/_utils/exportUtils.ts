@@ -25,6 +25,10 @@ function buildShadow(s) { if (!s.shadowEnabled) return "none"; var hex = Math.ro
 export default function FileUploadComponent() {
   const invalid = state.invalid || state.previewState === "invalid";
   const disabled = state.disabled || state.previewState === "disabled";
+  const isLoading = state.previewState === "loading";
+  const [isHovering, setIsHovering] = React.useState(false);
+  const [isDragActive, setIsDragActive] = React.useState(false);
+  const stopDrag = (event) => { event.preventDefault(); setIsDragActive(false); };
   const message = invalid ? state.errorText : state.showSuccess ? state.successText : state.showHelper ? state.helper : "";
   const selectedFiles = state.value.split(",").map((file) => file.trim()).filter(Boolean);
   const visibleFiles = selectedFiles.length || state.previewState === "filled" ? selectedFiles.length ? selectedFiles : ["brand-kit.zip"] : [];
@@ -60,18 +64,42 @@ export default function FileUploadComponent() {
         {state.label}{state.required ? " *" : ""}
       </label>
       <p id={descriptionId} className="text-sm" style={{ color: state.muted }}>{state.description}</p>
-      <div className={zoneClass} style={{ borderColor: invalid ? state.errorColor : state.border, background: "rgba(255,255,255,0.04)" }} data-render-mode={state.dropMode}>
-        <input id={state.id} name={state.name} title={state.title} tabIndex={state.tabIndex} dir={state.dir} lang={state.lang} type="file" accept={state.accept} multiple={state.multiple} capture={state.capture || undefined} required={state.required} disabled={disabled} aria-invalid={invalid || undefined} aria-describedby={describedBy} className={state.dropMode === "dropzone" ? "mx-auto max-w-full" : "sr-only"} />
+      <div
+        className={zoneClass}
+        style={{
+          borderColor: invalid ? state.errorColor : isDragActive ? state.dropzoneActiveBorder : isHovering ? state.dropzoneHoverBorder : state.border,
+          background: isDragActive ? state.dropzoneActiveBg : isHovering ? state.dropzoneHoverBg : state.dropzoneBg,
+          color: state.dropzoneText,
+        }}
+        data-render-mode={state.dropMode}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        onDragEnter={(event) => { event.preventDefault(); setIsDragActive(true); }}
+        onDragOver={(event) => event.preventDefault()}
+        onDragLeave={stopDrag}
+        onDrop={stopDrag}
+      >
+        <input id={state.id} name={state.name} title={state.title} tabIndex={state.tabIndex} dir={state.dir} lang={state.lang} type="file" accept={state.accept} multiple={state.multiple} capture={state.capture || undefined} required={state.required} disabled={disabled} aria-invalid={invalid || undefined} aria-describedby={describedBy} aria-label={state.ariaLabel || undefined} className={state.dropMode === "dropzone" ? "mx-auto max-w-full" : "sr-only"} />
         {state.dropMode !== "dropzone" && (
           <label htmlFor={state.id} className="inline-flex w-fit cursor-pointer items-center justify-center rounded-xl px-4 py-2 text-sm font-bold" style={{ background: state.accent, color: state.actionText }}>
             Browse files
           </label>
         )}
         <span id={helperId} className="text-sm" style={{ color: state.muted }}>{state.maxFileCount} file{state.maxFileCount === 1 ? "" : "s"} max, {state.maxSizeLabel}, accepts {state.accept || "any file"}</span>
+        {isLoading && (
+          <div aria-hidden="true" className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: state.progressBg }}>
+            <div className="h-full rounded-full" style={{ width: "60%", background: state.progressFill }} />
+          </div>
+        )}
         <div className={listClass} aria-live="polite">
           {visibleFiles.length ? visibleFiles.map((file) => (
-            <span key={file} className="rounded-xl border px-3 py-2 text-sm" style={{ borderColor: state.border, color: state.foreground }}>
+            <span key={file} className="flex items-center gap-2 rounded-xl border px-3 py-2 text-sm" style={{ borderColor: state.fileListItemBorder, background: state.fileListBg, color: state.foreground }}>
               {file}
+              {state.showRemoveAction && (
+                <button type="button" aria-label={\`Remove \${file}\`} disabled={disabled} className="ml-auto leading-none disabled:opacity-50" style={{ color: state.removeIconColor }}>
+                  ×
+                </button>
+              )}
             </span>
           )) : (
             <span className="text-sm" style={{ color: state.muted }}>No file selected</span>

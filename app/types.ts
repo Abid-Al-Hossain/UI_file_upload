@@ -90,6 +90,18 @@ export type FileUploadState = {
   disabledBorder: string;
   readOnly: boolean;
   invalid: boolean;
+  ariaLabel: string;
+  dropzoneBg: string;
+  dropzoneText: string;
+  dropzoneHoverBg: string;
+  dropzoneHoverBorder: string;
+  dropzoneActiveBg: string;
+  dropzoneActiveBorder: string;
+  progressBg: string;
+  progressFill: string;
+  fileListBg: string;
+  fileListItemBorder: string;
+  removeIconColor: string;
 };
 
 export type StudioPreset = {

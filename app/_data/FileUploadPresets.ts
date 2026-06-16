@@ -84,7 +84,19 @@ export const DEFAULT_FILEUPLOAD_STATE: FileUploadState = {
   "successColor": "#22c55e",
   "actionText": "#020617",
   "readOnly": false,
-  "invalid": false
+  "invalid": false,
+  "ariaLabel": "",
+  "dropzoneBg": "rgba(255,255,255,0.04)",
+  "dropzoneText": "#94a3b8",
+  "dropzoneHoverBg": "rgba(56,189,248,0.06)",
+  "dropzoneHoverBorder": "#38bdf8",
+  "dropzoneActiveBg": "rgba(56,189,248,0.14)",
+  "dropzoneActiveBorder": "#0ea5e9",
+  "progressBg": "rgba(255,255,255,0.12)",
+  "progressFill": "#38bdf8",
+  "fileListBg": "rgba(255,255,255,0.04)",
+  "fileListItemBorder": "#334155",
+  "removeIconColor": "#ef4444"
 };
 
 export const FILEUPLOAD_PRESETS: StudioPreset[] = [

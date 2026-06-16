@@ -18,6 +18,21 @@ export default function ColorsSection({ state, update }: Props) {
       <SectionCard title="Action" subtitle="Primary button and call-to-action text.">
         <ColorControl label="Action text" value={state.actionText} onChange={(v) => update("actionText", v)} />
       </SectionCard>
+      <SectionCard title="Dropzone States" subtitle="Idle, hover, and drag-over appearance.">
+        <ColorControl label="Background" value={state.dropzoneBg} onChange={(v) => update("dropzoneBg", v)} />
+        <ColorControl label="Text" value={state.dropzoneText} onChange={(v) => update("dropzoneText", v)} />
+        <ColorControl label="Hover background" value={state.dropzoneHoverBg} onChange={(v) => update("dropzoneHoverBg", v)} />
+        <ColorControl label="Hover border" value={state.dropzoneHoverBorder} onChange={(v) => update("dropzoneHoverBorder", v)} />
+        <ColorControl label="Drag-active background" value={state.dropzoneActiveBg} onChange={(v) => update("dropzoneActiveBg", v)} />
+        <ColorControl label="Drag-active border" value={state.dropzoneActiveBorder} onChange={(v) => update("dropzoneActiveBorder", v)} />
+      </SectionCard>
+      <SectionCard title="Progress & File List" subtitle="Upload progress bar and file list item styling.">
+        <ColorControl label="Progress background" value={state.progressBg} onChange={(v) => update("progressBg", v)} />
+        <ColorControl label="Progress fill" value={state.progressFill} onChange={(v) => update("progressFill", v)} />
+        <ColorControl label="File list background" value={state.fileListBg} onChange={(v) => update("fileListBg", v)} />
+        <ColorControl label="File list item border" value={state.fileListItemBorder} onChange={(v) => update("fileListItemBorder", v)} />
+        <ColorControl label="Remove icon" value={state.removeIconColor} onChange={(v) => update("removeIconColor", v)} />
+      </SectionCard>
       <SectionCard title="State Colors" subtitle="Status-driven accent colors.">
         <ColorControl label="Error" value={state.errorColor} onChange={(v) => update("errorColor", v)} />
         <ColorControl label="Success" value={state.successColor} onChange={(v) => update("successColor", v)} />
